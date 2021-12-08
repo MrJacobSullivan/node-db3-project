@@ -9,17 +9,16 @@ const Scheme = require('./scheme-model')
   }
 */
 const checkSchemeId = async (req, res, next) => {
-  // try {
-  //   const scheme = Scheme.findById(req.params.scheme_id)
-  //   if (scheme.scheme_id === undefined) {
-  //     next({ status: 404, message: `scheme with scheme_id ${req.params.scheme_id} not found` })
-  //   } else {
-  //     next()
-  //   }
-  // } catch (err) {
-  //   next(err)
-  // }
-  next()
+  try {
+    const scheme = await Scheme.findById(req.params.scheme_id)
+    if (scheme.scheme_id === undefined) {
+      next({ status: 404, message: `scheme with scheme_id ${req.params.scheme_id} not found` })
+    } else {
+      next()
+    }
+  } catch (err) {
+    next(err)
+  }
 }
 
 /*
@@ -31,7 +30,15 @@ const checkSchemeId = async (req, res, next) => {
   }
 */
 const validateScheme = (req, res, next) => {
-  next()
+  if (
+    req.body.scheme_name === undefined ||
+    req.body.scheme_name === '' ||
+    typeof req.body.scheme_name !== 'string'
+  ) {
+    next({ status: 400, message: 'invalid scheme_name' })
+  } else {
+    next()
+  }
 }
 
 /*
@@ -44,7 +51,17 @@ const validateScheme = (req, res, next) => {
   }
 */
 const validateStep = (req, res, next) => {
-  next()
+  if (
+    (req.body.instruction === undefined ||
+      req.body.instruction === '' ||
+      typeof req.body.instruction !== 'string',
+    typeof req.body.step_number !== 'number',
+    req.body.step_number < 1)
+  ) {
+    next({ status: 400, message: 'invalid step' })
+  } else {
+    next()
+  }
 }
 
 module.exports = {
